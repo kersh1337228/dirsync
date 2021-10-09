@@ -67,17 +67,5 @@ def main(*args):
         exit('Wrong command line arguments')
 
 
-'''
-Data format should be next:
-py/python app.py <original_path> <replica_path> <sync_interval> <log_path>
-
-original_path, replica_path and log_path can be either absolute paths
-or relative ones;
-sync_interval must be able to convert to float;
-
-To exit the program use: Ctrl + Break or Ctrl + C
-'''
-
-
 if __name__ == '__main__':
     main(*sys.argv)
