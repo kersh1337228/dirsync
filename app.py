@@ -3,6 +3,7 @@ import sys
 import shutil
 import time
 import filecmp
+import datetime
 
 
 '''
@@ -21,7 +22,8 @@ def synchronize(original_path, replica_path, log_file):
     for file in compare.diff_files:
         #File copy with replace
         shutil.copy2(os.path.join(original_path, file), os.path.join(replica_path))
-        log = f'File {file} copied with replace from {original_path} to {replica_path}\n'
+        log = f'File {file} copied with replace from {original_path} to {replica_path}' \
+              f'   ({datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S")})\n'
         log_file.write(log)
         print(log)
     #In original, not in replica
@@ -29,13 +31,15 @@ def synchronize(original_path, replica_path, log_file):
         #File copy
         try:
             shutil.copy2(os.path.join(original_path, file), os.path.join(replica_path))
-            log = f'File {file} copied from {original_path} to {replica_path}\n'
+            log = f'File {file} copied from {original_path} to {replica_path}' \
+                  f'   ({datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S")})\n'
             log_file.write(log)
             print(log)
         #Directory recursive copy
         except PermissionError:
             shutil.copytree(os.path.join(original_path, file), os.path.join(replica_path, file))
-            log = f'Directory {file} copied from {original_path} to {replica_path}\n'
+            log = f'Directory {file} copied from {original_path} to {replica_path}' \
+                  f'   ({datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S")})\n'
             log_file.write(log)
             print(log)
     #In replica, not in original
@@ -43,13 +47,15 @@ def synchronize(original_path, replica_path, log_file):
         #File delete
         try:
             os.remove(os.path.join(replica_path, file))
-            log = f'File {file} removed from {replica_path}\n'
+            log = f'File {file} removed from {replica_path}' \
+                  f'   ({datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S")})\n'
             log_file.write(log)
             print(log)
         #Direvtory recursive delete
         except PermissionError:
             shutil.rmtree(os.path.join(replica_path, file))
-            log = f'Directory {file} removed from {replica_path}\n'
+            log = f'Directory {file} removed from {replica_path}' \
+                  f'   ({datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S")})\n'
             log_file.write(log)
             print(log)
 
@@ -58,13 +64,16 @@ def main(*args):
     try:
         #Unpacking command line arguments
         original_path, replica_path, sync_interval, log_path = list(args)[1:]
-        log_file = open(log_path, 'a')
         while 1:
+            log_file = open(log_path, 'a')
             synchronize(original_path, replica_path, log_file)
-            log_file.write('\n\n\n')
+            log_file.close()
             time.sleep(float(sync_interval))
-    except:
+    except ValueError:
         exit('Wrong command line arguments')
+    except KeyboardInterrupt:
+        #Success exit
+        exit(0)
 
 
 if __name__ == '__main__':
