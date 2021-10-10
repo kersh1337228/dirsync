@@ -69,11 +69,11 @@ def main(*args):
             synchronize(original_path, replica_path, log_file)
             log_file.close()
             time.sleep(float(sync_interval))
-    except ValueError:
-        exit('Wrong command line arguments')
     except KeyboardInterrupt:
         #Success exit
         exit(0)
+    except:
+        exit('Wrong command line arguments')
 
 
 if __name__ == '__main__':
